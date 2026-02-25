@@ -2,7 +2,7 @@
 name = "build-unity-project"
 version = "0.1.0"
 description = "CLI tool to automate Unity project builds"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.11"
 dependencies = []
 
 [project.scripts]

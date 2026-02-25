@@ -24,7 +24,7 @@ def focus_unity_editor() -> None:
     if sys.platform != "win32":
         return
 
-    user32 = ctypes.windll.user32  # type: ignore[attr-defined]
+    user32 = ctypes.windll.user32
     hwnd: int = user32.FindWindowW("UnityContainerWndClass", None)
     if hwnd:
         user32.SetForegroundWindow(hwnd)
@@ -47,7 +47,7 @@ def write_trigger(
     focus_unity_editor()
 
 
-def poll_result(project_path: Path, timeout: int) -> dict:
+def poll_result(project_path: Path, timeout: int) -> dict[str, object]:
     """Poll for build_result.json until it appears or timeout is reached.
 
     Returns the parsed JSON dict on success.
@@ -58,13 +58,12 @@ def poll_result(project_path: Path, timeout: int) -> dict:
 
     while elapsed < timeout:
         if result_path.exists():
-            data: dict = json.loads(result_path.read_text(encoding="utf-8"))
+            data: dict[str, object] = json.loads(result_path.read_text(encoding="utf-8"))
             result_path.unlink()
             return data
         time.sleep(TRIGGER_POLL_INTERVAL)
         elapsed += TRIGGER_POLL_INTERVAL
 
     raise TimeoutError(
-        f"Build result not received within {timeout} seconds. "
-        f"Expected: {result_path}"
+        f"Build result not received within {timeout} seconds. Expected: {result_path}"
     )
