@@ -11,8 +11,7 @@ ERROR_BUILD_FAILED = "Unity build failed with exit code {code}. Check log: {log}
 ERROR_APK_NOT_FOUND = "Build completed but APK not found: {path}"
 ERROR_BUILD_TIMEOUT = "Unity build timed out after {minutes} minutes"
 ERROR_PROJECT_LOCKED = (
-    "Unity project is locked — close the Unity editor before building.\n"
-    "Lock file: {path}"
+    "Unity project is locked — close the Unity editor before building.\nLock file: {path}"
 )
 
 # Log tail settings
@@ -49,4 +48,15 @@ WATCHER_SCRIPT_FILENAME = "BuildTriggerWatcher.cs"
 ERROR_EDITOR_NOT_RUNNING = (
     "Trigger mode requires the Unity editor to be running, "
     "but no lock file was found.\nExpected: {path}"
+)
+
+# Editor discovery
+EDITORS_CACHE_FILENAME = ".unity_editors_cache.json"
+UNITY_VERSION_DIR_PATTERN = r"^\d+\.\d+\.\d+[a-z]\d+$"
+UNITY_HUB_EDITOR_SUBPATH = "Unity/Hub/Editor"
+ERROR_UNITY_EDITORS_NOT_DISCOVERED = (
+    "Could not find any Unity Editor installation on this system.\n"
+    "Please either:\n"
+    "  1. Set 'unity_editors_path' in config.json\n"
+    "  2. Install Unity via Unity Hub"
 )

@@ -27,11 +27,10 @@ def _write_config(tmp_path: Path, data: dict, project: bool = True, output: bool
     return config_file
 
 
-def _valid_data(tmp_path: Path) -> dict:
+def _valid_data(tmp_path: Path, *, include_editors_path: bool = True) -> dict:
     """Return a valid config dict (without paths — those are set by _write_config)."""
-    return {
+    data: dict = {
         "unity_version": "6000.3.7f1",
-        "unity_editors_path": str(tmp_path),
         "scenes": ["Assets/Scenes/Main.unity"],
         "build_target": "Android",
         "apk_prefix": "test-app",
@@ -39,6 +38,9 @@ def _valid_data(tmp_path: Path) -> dict:
         "build_script_method": "BuildAutomation.BuildScript.BuildAndroid",
         "log_folder": "logs",
     }
+    if include_editors_path:
+        data["unity_editors_path"] = str(tmp_path)
+    return data
 
 
 def test_load_valid_config(tmp_path: Path) -> None:
@@ -119,3 +121,20 @@ def test_load_config_relative_paths(tmp_path: Path) -> None:
     assert config.output_folder == (tmp_path / "output").resolve()
     assert config.unity_editors_path == tmp_path.resolve()
     assert config.log_folder == str((tmp_path / "logs").resolve())
+
+
+def test_load_config_without_editors_path(tmp_path: Path) -> None:
+    data = _valid_data(tmp_path, include_editors_path=False)
+    config_file = _write_config(tmp_path, data)
+    config = load_config(config_file)
+
+    assert config.unity_editors_path is None
+
+
+def test_load_config_empty_editors_path(tmp_path: Path) -> None:
+    data = _valid_data(tmp_path, include_editors_path=False)
+    data["unity_editors_path"] = ""
+    config_file = _write_config(tmp_path, data)
+    config = load_config(config_file)
+
+    assert config.unity_editors_path is None

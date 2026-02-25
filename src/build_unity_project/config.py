@@ -15,7 +15,6 @@ from build_unity_project.constants import (
 
 REQUIRED_FIELDS = [
     "unity_version",
-    "unity_editors_path",
     "project_path",
     "scenes",
     "build_target",
@@ -32,7 +31,6 @@ class BuildConfig:
     """Typed build configuration."""
 
     unity_version: str
-    unity_editors_path: Path
     project_path: Path
     scenes: list[str]
     build_target: str
@@ -41,6 +39,7 @@ class BuildConfig:
     version_increment: str
     build_script_method: str
     log_folder: str
+    unity_editors_path: Path | None = None
     build_mode: str = "auto"
 
 
@@ -65,12 +64,15 @@ def load_config(path: Path) -> BuildConfig:
     if not output_folder.exists():
         raise FileNotFoundError(ERROR_OUTPUT_FOLDER_NOT_FOUND.format(path=output_folder))
 
-    unity_editors_path = (config_dir / data["unity_editors_path"]).resolve()
+    raw_editors = data.get("unity_editors_path", "")
+    unity_editors_path: Path | None = None
+    if raw_editors:
+        unity_editors_path = (config_dir / raw_editors).resolve()
+
     log_folder = str((config_dir / data["log_folder"]).resolve())
 
     return BuildConfig(
         unity_version=data["unity_version"],
-        unity_editors_path=unity_editors_path,
         project_path=project_path,
         scenes=data["scenes"],
         build_target=data["build_target"],
@@ -79,5 +81,6 @@ def load_config(path: Path) -> BuildConfig:
         version_increment=data["version_increment"],
         build_script_method=data["build_script_method"],
         log_folder=log_folder,
+        unity_editors_path=unity_editors_path,
         build_mode=data.get("build_mode", "auto"),
     )

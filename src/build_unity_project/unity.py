@@ -27,6 +27,8 @@ from build_unity_project.constants import (
 
 def find_unity_executable(config: BuildConfig) -> Path:
     """Construct path to Unity executable and validate it exists."""
+    if config.unity_editors_path is None:
+        raise ValueError("unity_editors_path must be resolved before finding executable")
     if not config.unity_editors_path.exists():
         raise FileNotFoundError(
             ERROR_UNITY_EDITORS_NOT_FOUND.format(path=config.unity_editors_path)
@@ -34,11 +36,7 @@ def find_unity_executable(config: BuildConfig) -> Path:
 
     unity_exe = config.unity_editors_path / config.unity_version / "Editor" / UNITY_EXE_NAME
     if not unity_exe.exists():
-        available = [
-            d.name
-            for d in config.unity_editors_path.iterdir()
-            if d.is_dir()
-        ]
+        available = [d.name for d in config.unity_editors_path.iterdir() if d.is_dir()]
         msg = ERROR_UNITY_NOT_FOUND.format(path=unity_exe)
         if available:
             msg += f"\nAvailable versions: {', '.join(sorted(available))}"
@@ -59,10 +57,14 @@ def build_unity_command(
         UNITY_BATCHMODE,
         UNITY_QUIT,
         UNITY_NOGRAPHICS,
-        UNITY_PROJECT_PATH, str(config.project_path),
-        UNITY_BUILD_TARGET, config.build_target,
-        UNITY_EXECUTE_METHOD, config.build_script_method,
-        UNITY_LOG_FILE, str(log_path),
+        UNITY_PROJECT_PATH,
+        str(config.project_path),
+        UNITY_BUILD_TARGET,
+        config.build_target,
+        UNITY_EXECUTE_METHOD,
+        config.build_script_method,
+        UNITY_LOG_FILE,
+        str(log_path),
     ]
 
 

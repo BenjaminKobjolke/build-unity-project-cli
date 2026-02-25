@@ -10,11 +10,17 @@ from build_unity_project import build_script_deployer
 from build_unity_project.config import BuildConfig, load_config
 from build_unity_project.constants import (
     BUILD_TIMEOUT_SECONDS,
+    EDITORS_CACHE_FILENAME,
     ERROR_APK_NOT_FOUND,
     ERROR_BUILD_FAILED,
     ERROR_EDITOR_NOT_RUNNING,
     ERROR_PROJECT_LOCKED,
     LOG_TAIL_LINES,
+)
+from build_unity_project.editor_discovery import (
+    load_editors_cache,
+    prompt_and_discover,
+    save_editors_cache,
 )
 from build_unity_project.trigger import poll_result, write_trigger
 from build_unity_project.unity import find_unity_executable, run_unity_build
@@ -95,6 +101,20 @@ def main(argv: list[str] | None = None) -> None:
 
     # Load config
     config = load_config(args.config)
+
+    if config.unity_editors_path is None:
+        from dataclasses import replace
+
+        cache_path = args.config.resolve().parent / EDITORS_CACHE_FILENAME
+        cached = load_editors_cache(cache_path)
+        if cached is not None:
+            print(f"Using cached Unity editors path: {cached}")
+            editors_path = cached
+        else:
+            editors_path = prompt_and_discover()
+            save_editors_cache(cache_path, editors_path)
+        config = replace(config, unity_editors_path=editors_path)
+
     print(f"Project: {config.project_path}")
     print(f"Unity: {config.unity_version}")
 

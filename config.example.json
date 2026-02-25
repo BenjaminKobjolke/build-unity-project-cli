@@ -1,5 +1,6 @@
 {
     "_comment": "Paths can be absolute or relative to this config file's location.",
+    "_comment_editors": "unity_editors_path is optional. If omitted, the tool will auto-discover Unity installations.",
     "unity_version": "6000.3.7f1",
     "unity_editors_path": "C:/Program Files/Unity/Hub/Editor",
     "project_path": "..",

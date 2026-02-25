@@ -104,6 +104,7 @@ __pycache__/
 
 # User-specific config
 config.json
+.unity_editors_cache.json
 
 # Claude Code
 .claude/
