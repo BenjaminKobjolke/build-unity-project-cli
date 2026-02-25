@@ -55,17 +55,22 @@ def load_config(path: Path) -> BuildConfig:
         if field not in data:
             raise ValueError(ERROR_CONFIG_FIELD_MISSING.format(field=field))
 
-    project_path = Path(data["project_path"])
+    config_dir = path.resolve().parent
+
+    project_path = (config_dir / data["project_path"]).resolve()
     if not project_path.exists():
         raise FileNotFoundError(ERROR_PROJECT_NOT_FOUND.format(path=project_path))
 
-    output_folder = Path(data["output_folder"])
+    output_folder = (config_dir / data["output_folder"]).resolve()
     if not output_folder.exists():
         raise FileNotFoundError(ERROR_OUTPUT_FOLDER_NOT_FOUND.format(path=output_folder))
 
+    unity_editors_path = (config_dir / data["unity_editors_path"]).resolve()
+    log_folder = str((config_dir / data["log_folder"]).resolve())
+
     return BuildConfig(
         unity_version=data["unity_version"],
-        unity_editors_path=Path(data["unity_editors_path"]),
+        unity_editors_path=unity_editors_path,
         project_path=project_path,
         scenes=data["scenes"],
         build_target=data["build_target"],
@@ -73,6 +78,6 @@ def load_config(path: Path) -> BuildConfig:
         apk_prefix=data["apk_prefix"],
         version_increment=data["version_increment"],
         build_script_method=data["build_script_method"],
-        log_folder=data["log_folder"],
+        log_folder=log_folder,
         build_mode=data.get("build_mode", "auto"),
     )

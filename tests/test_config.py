@@ -83,3 +83,39 @@ def test_load_config_missing_output_folder(tmp_path: Path) -> None:
 
     with pytest.raises(FileNotFoundError, match="Output folder not found"):
         load_config(config_file)
+
+
+def test_load_config_relative_paths(tmp_path: Path) -> None:
+    """Relative paths in config resolve relative to the config file location."""
+    # Create directory structure:
+    #   tmp_path/
+    #     project/
+    #     output/
+    #     subdir/
+    #       config.json   (paths use ".." to reach siblings)
+    (tmp_path / "project").mkdir()
+    (tmp_path / "output").mkdir()
+    subdir = tmp_path / "subdir"
+    subdir.mkdir()
+
+    data = {
+        "unity_version": "6000.3.7f1",
+        "unity_editors_path": "..",
+        "project_path": "../project",
+        "scenes": ["Assets/Scenes/Main.unity"],
+        "build_target": "Android",
+        "output_folder": "../output",
+        "apk_prefix": "test-app",
+        "version_increment": "patch",
+        "build_script_method": "BuildAutomation.BuildScript.BuildAndroid",
+        "log_folder": "../logs",
+    }
+    config_file = subdir / "config.json"
+    config_file.write_text(json.dumps(data), encoding="utf-8")
+
+    config = load_config(config_file)
+
+    assert config.project_path == (tmp_path / "project").resolve()
+    assert config.output_folder == (tmp_path / "output").resolve()
+    assert config.unity_editors_path == tmp_path.resolve()
+    assert config.log_folder == str((tmp_path / "logs").resolve())

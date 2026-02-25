@@ -1,10 +1,11 @@
 {
+    "_comment": "Paths can be absolute or relative to this config file's location.",
     "unity_version": "6000.3.7f1",
     "unity_editors_path": "C:/Program Files/Unity/Hub/Editor",
-    "project_path": "C:/Projects/my-unity-project",
+    "project_path": "..",
     "scenes": ["Assets/Scenes/Main.unity"],
     "build_target": "Android",
-    "output_folder": "C:/Projects/my-unity-project/builds",
+    "output_folder": "../builds",
     "apk_prefix": "myapp",
     "version_increment": "patch",
     "build_script_method": "BuildAutomation.BuildScript.BuildAndroid",
